@@ -18,8 +18,16 @@ DOCKER_CMD=( docker run --rm -it -v "$(pwd)":/encryptor encryptor )
 "${DOCKER_CMD[@]}" rm "$INTERMEDIATE_ARCHIVE_NAME"
 "${DOCKER_CMD[@]}" chown "${UID}:${GUID}" "$INTERMEDIATE_ARCHIVE_NAME".gpg
 
-"${DOCKER_CMD[@]}" tar czf "$ENCRYPTED_ARCHIVE_NAME" "$PATH_TO_ENCRYPT"
-"${DOCKER_CMD[@]}" gpg --symmetric "$ENCRYPTED_ARCHIVE_NAME"
-"${DOCKER_CMD[@]}" rm "$ENCRYPTED_ARCHIVE_NAME"
-"${DOCKER_CMD[@]}" chown "${UID}:${GUID}" "$ENCRYPTED_ARCHIVE_NAME".gpg
-# "${DOCKER_CMD[@]}" rm -rf "$PATH_TO_ENCRYPT"
+echo "Completed encryption. Created archive is $INTERMEDIATE_ARCHIVE_NAME.gpg"
+echo
+echo "Delete the encrypted file, $PATH_TO_ENCRYPT? [y/N]"
+read -s -r -n 1
+case "$REPLY" in
+        y|Y )
+            echo "Ok! Deleting $PATH_TO_ENCRYPT"
+            "${DOCKER_CMD[@]}" rm -rf "$PATH_TO_ENCRYPT"
+            ;;
+        * )
+            echo "Ok! Not deleting. Bye!"
+            ;;
+esac
