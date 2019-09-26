@@ -5,8 +5,9 @@ set -e
 PATH_TO_ENCRYPT=$(basename "$1")
 
 if ! docker image ls | grep -q encryptor; then
-  echo "No image for encryptor found - building it!"
-  docker build -t encryptor .
+  echo "No image for encryptor found - building it..."
+  docker build -t encryptor . &> /dev/null
+  echo "... Docker image built!"
 fi
 
 DOCKER_CMD=( docker run --rm -it -v "$(pwd)":/encryptor encryptor )
