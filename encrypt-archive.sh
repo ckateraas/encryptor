@@ -10,9 +10,13 @@ if ! docker image ls | grep -q encryptor; then
   echo "... Docker image built!"
 fi
 
+INTERMEDIATE_ARCHIVE_NAME="$PATH_TO_ENCRYPT-$( date +'%F-%R' )"
 DOCKER_CMD=( docker run --rm -it -v "$(pwd)":/encryptor encryptor )
 
-ENCRYPTED_ARCHIVE_NAME="$PATH_TO_ENCRYPT-$( date +'%F-%R' )"
+"${DOCKER_CMD[@]}" tar czf "$INTERMEDIATE_ARCHIVE_NAME" "$PATH_TO_ENCRYPT"
+"${DOCKER_CMD[@]}" gpg --symmetric "$INTERMEDIATE_ARCHIVE_NAME"
+"${DOCKER_CMD[@]}" rm "$INTERMEDIATE_ARCHIVE_NAME"
+"${DOCKER_CMD[@]}" chown "${UID}:${GUID}" "$INTERMEDIATE_ARCHIVE_NAME".gpg
 
 "${DOCKER_CMD[@]}" tar czf "$ENCRYPTED_ARCHIVE_NAME" "$PATH_TO_ENCRYPT"
 "${DOCKER_CMD[@]}" gpg --symmetric "$ENCRYPTED_ARCHIVE_NAME"
