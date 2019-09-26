@@ -4,6 +4,11 @@ set -e
 
 PATH_TO_ENCRYPT=$(basename "$1")
 
+if [[ ! -f "$PATH_TO_ENCRYPT" && ! -d "$PATH_TO_ENCRYPT" ]]; then
+    echo "No such file or directory, $PATH_TO_ENCRYPT"
+    exit 1
+fi
+
 if ! docker image ls | grep -q encryptor; then
   echo "No image for encryptor found - building it..."
   docker build -t encryptor . &> /dev/null

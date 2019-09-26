@@ -9,6 +9,12 @@ if [[ ! -f "$ARCHIVE_NAME" ]]; then
     exit 1
 fi
 
+if ! docker image ls | grep -q encryptor; then
+  echo "No image for encryptor found - building it..."
+  docker build -t encryptor . &> /dev/null
+  echo "... Docker image built!"
+fi
+
 DOCKER_CMD=( docker run --rm -it -v "$(pwd)":/encryptor encryptor )
 
 "${DOCKER_CMD[@]}" gpg --output intermediate-archive.tar.gz --decrypt "$ARCHIVE_NAME"
